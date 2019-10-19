@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace Microservices.GeneratingChaos.Services.Weather.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class SunController : ControllerBase
     {
         private readonly ILogger<WeatherForecastController> _logger;
