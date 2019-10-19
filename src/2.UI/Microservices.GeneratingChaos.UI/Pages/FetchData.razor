@@ -1,46 +1,122 @@
 ﻿@page "/fetchdata"
 
-@using Microservices.GeneratingChaos.UI.Data
-@inject WeatherForecastService ForecastService
+@using Microservices.GeneratingChaos.UI.Domain.Models
+@using Syncfusion.EJ2.Blazor.Grids
+@using Syncfusion.EJ2.Blazor.DropDowns
+@using Syncfusion.EJ2.Blazor.Data
+
+@inject IJSRuntime JsRuntime;
+@inject HttpClient Http
 
 <h1>Weather forecast</h1>
 
-<p>This component demonstrates fetching data from a service.</p>
+<p>Select a city to get the weather forecast</p>
 
-@if (forecasts == null)
+<div class="col-lg-12 control-section">
+    <div class="control_wrapper">
+        <EjsDropDownList @bind-Value="@SelectedCity" @ref="@Dropdown" TValue="string" PopupHeight="230px" Index=2 Placeholder="Select a city" DataSource="@cities">
+            <DropDownListFieldSettings Text="Text" Value="ID"></DropDownListFieldSettings>
+            <DropDownListEvents ValueChange="@((Action<Syncfusion.EJ2.Blazor.DropDowns.ChangeEventArgs<string>>) (args => OnChange(args)))"></DropDownListEvents>
+        </EjsDropDownList>
+        <h1>@SelectedCity</h1>
+    </div>
+</div>
+
+@if (forecasts == null && SelectedCity != null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="control-section">
+        <EjsChart Title="Weather forecast">
+            <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
+            <ChartPrimaryXAxis ValueType="Syncfusion.EJ2.Blazor.Charts.ValueType.DateTime" LabelFormat="y" IntervalType="IntervalType.Months" EdgeLabelPlacement="EdgeLabelPlacement.Shift">
+                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+            </ChartPrimaryXAxis>
+            <ChartPrimaryYAxis LabelFormat="{value}%" RangePadding="ChartRangePadding.None" Minimum="0" Maximum="100" Interval="20">
+                <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+                <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
+            </ChartPrimaryYAxis>
+            <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+            <ChartSeriesCollection>
+                <ChartSeries DataSource="@chartData" Name="Temp. (C)" XName="xValue" Width="2"
+                             Opacity="1" YName="temperatureValue" Type="ChartSeriesType.Line">
+                    <ChartMarker Visible="true" Width="10" Height="10">
+                    </ChartMarker>
+                </ChartSeries>
+                <ChartSeries DataSource="@chartData" Name="Humidity" XName="xValue" Width="2"
+                             Opacity="1" YName="humidityValue" Type="ChartSeriesType.Line">
+                    <ChartMarker Visible="true" Width="10" Height="10">
+                    </ChartMarker>
+                </ChartSeries>
+                <ChartSeries DataSource="@chartData" Name="Pressure" XName="xValue" Width="2"
+                             Opacity="1" YName="pressureValue" Type="ChartSeriesType.Line">
+                    <ChartMarker Visible="true" Width="10" Height="10">
+                    </ChartMarker>
+                </ChartSeries>
+            </ChartSeriesCollection>
+        </EjsChart>
+
+        <div class="col-lg-12 control-section">
+            <div class="content-wrapper">
+                <div class="row">
+                    <EjsGrid DataSource="@forecasts" AllowPaging="true">
+                        <GridColumns>
+                            <GridColumn Field=@nameof(WheatherForecastDto.Date) HeaderText="Date" Format="yMd" Type="ColumnType.Date" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+                            <GridColumn Field=@nameof(WheatherForecastDto.Temperature) HeaderText="Temperature" Width="150"></GridColumn>
+                            <GridColumn Field=@nameof(WheatherForecastDto.Humidity) HeaderText="Humidity" TextAlign="TextAlign.Right" Width="130"></GridColumn>
+                            <GridColumn Field=@nameof(WheatherForecastDto.Pressure) HeaderText="Pressure" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+                            <GridColumn Field=@nameof(WheatherForecastDto.Icon) HeaderText="Icon" Format="C2" TextAlign="TextAlign.Right" Width="120"></GridColumn>
+
+                        </GridColumns>
+                    </EjsGrid>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+    EjsDropDownList<string> Dropdown;
+    WheatherForecastDto[] forecasts;
+    List<CityDropdown> cities = new List<CityDropdown>() { new CityDropdown { ID = Guid.NewGuid().ToString(), Text = "BCN" },
+        new CityDropdown { ID = Guid.NewGuid().ToString(), Text = "london" },
+        new CityDropdown { ID = Guid.NewGuid().ToString(), Text = "masachuuseee" },
+        new CityDropdown { ID = Guid.NewGuid().ToString(), Text = "bilbado" }};
+    List<LineChartData> chartData = new List<LineChartData>();
+    string SelectedCity;
+
+    public class CityDropdown
+    {
+        public string ID { get; set; }
+        public string Text { get; set; }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        await GetCities();
     }
+
+    private void OnChange(Syncfusion.EJ2.Blazor.DropDowns.ChangeEventArgs<string> args)
+    {
+        this.GetCityWeather(args.Value);
+    }
+
+    private async Task GetCityWeather(string cityId)
+    {
+        forecasts = await Http.GetJsonAsync<WheatherForecastDto[]>("WeatherForecast");
+        foreach (var forecast in forecasts)
+        {
+            chartData.Add(new LineChartData { xValue = new DateTime(forecast.Date.Year, forecast.Date.Month, forecast.Date.Day), temperatureValue = forecast.Temperature, humidityValue = forecast.Humidity, pressureValue = forecast.Pressure });
+        }
+        StateHasChanged();
+    }
+
+    private async Task GetCities()
+    {
+        //cities = await Http.GetJsonAsync<CityDto[]>("api/v1/city");
+    }
+
+
 }
