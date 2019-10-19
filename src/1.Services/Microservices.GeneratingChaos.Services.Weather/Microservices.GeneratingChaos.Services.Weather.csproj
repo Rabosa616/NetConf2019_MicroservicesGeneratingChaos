@@ -23,11 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\Commands\" />
-    <Folder Include="Infrastructure\CommandHandler\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\0.BuildingBlocks\Microservices.GeneratingChaos.BuildingBlocks\Microservices.GeneratingChaos.BuildingBlocks.csproj" />
   </ItemGroup>
 

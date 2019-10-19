@@ -5,14 +5,22 @@ using System.Collections.Generic;
 namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.SeedWork
 {
     /// <summary>
-    /// 
+    /// Class Entity.
     /// </summary>
     public abstract class Entity
     {
+        /// <summary>
+        /// The requested hash code
+        /// </summary>
         int? _requestedHashCode;
+        /// <summary>
+        /// The identifier
+        /// </summary>
         Guid _Id;
 
-        /// <summary>Gets or sets the identifier.</summary>
+        /// <summary>
+        /// Gets or sets the identifier.
+        /// </summary>
         /// <value>The identifier.</value>
         public virtual Guid Id
         {
@@ -25,21 +33,32 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.SeedWork
                 _Id = value;
             }
         }
-        /// <summary>Gets or sets the created.</summary>
+        /// <summary>
+        /// Gets or sets the created.
+        /// </summary>
         /// <value>The created.</value>
         public DateTime Created { get; set; }
 
-        /// <summary>Gets or sets the modified.</summary>
+        /// <summary>
+        /// Gets or sets the modified.
+        /// </summary>
         /// <value>The modified.</value>
         public DateTime Modified { get; set; }
 
+        /// <summary>
+        /// The domain events
+        /// </summary>
         private List<INotification> _domainEvents;
 
-        /// <summary>Gets the domain events.</summary>
+        /// <summary>
+        /// Gets the domain events.
+        /// </summary>
         /// <value>The domain events.</value>
         public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
 
-        /// <summary>Adds the domain event.</summary>
+        /// <summary>
+        /// Adds the domain event.
+        /// </summary>
         /// <param name="eventItem">The event item.</param>
         public void AddDomainEvent(INotification eventItem)
         {
@@ -47,7 +66,9 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.SeedWork
             _domainEvents.Add(eventItem);
         }
 
-        /// <summary>Removes the domain event.</summary>
+        /// <summary>
+        /// Removes the domain event.
+        /// </summary>
         /// <param name="eventItem">The event item.</param>
         public void RemoveDomainEvent(INotification eventItem)
         {
@@ -62,18 +83,20 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.SeedWork
             _domainEvents?.Clear();
         }
 
-        /// <summary>Determines whether this instance is transient.</summary>
+        /// <summary>
+        /// Determines whether this instance is transient.
+        /// </summary>
         /// <returns><c>true</c> if this instance is transient; otherwise, <c>false</c>.</returns>
         public bool IsTransient()
         {
             return this.Id == default(Guid);
         }
 
-        /// <summary>Determines whether the specified <see cref="System.Object" />, is equal to this instance.</summary>
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// </summary>
         /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
+        /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
             if (obj == null || !(obj is Entity))
@@ -93,10 +116,10 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.SeedWork
                 return item.Id == this.Id;
         }
 
-        /// <summary>Returns a hash code for this instance.</summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-        /// </returns>
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode()
         {
             if (!IsTransient())
@@ -110,7 +133,9 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.SeedWork
                 return base.GetHashCode();
 
         }
-        /// <summary>Implements the operator ==.</summary>
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
@@ -122,7 +147,9 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.SeedWork
                 return left.Equals(right);
         }
 
-        /// <summary>Implements the operator !=.</summary>
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
         /// <param name="left">The left.</param>
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>

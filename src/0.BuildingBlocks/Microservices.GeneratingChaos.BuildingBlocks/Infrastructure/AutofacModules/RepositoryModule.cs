@@ -16,7 +16,7 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.AutofacMod
         private readonly IDbFactory _dbFactory;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="InfrastructureModule"/> class.
+        /// Initializes a new instance of <see cref="InfrastructureModule" /> class.
         /// </summary>
         /// <param name="dbFactory">The database factory.</param>
         protected RepositoryModule(IDbFactory dbFactory)
@@ -28,7 +28,7 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.AutofacMod
         /// Gets the collection.
         /// </summary>
         /// <typeparam name="TEntity">Document Type</typeparam>
-        /// <returns><seealso cref="IMongoCollection{TDocument}"/></returns>
+        /// <returns><seealso cref="IMongoCollection{TDocument}" /></returns>
         protected IMongoCollection<TEntity> GetCollection<TEntity>() where TEntity : Entity
         {
             return _dbFactory.Create().GetCollection<TEntity>(nameof(TEntity));
@@ -39,7 +39,7 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.AutofacMod
         /// </summary>
         /// <typeparam name="TEntity">Document Type</typeparam>
         /// <param name="collectionName">Name of the collection.</param>
-        /// <returns><seealso cref="IMongoCollection{TDocument}"/></returns>
+        /// <returns><seealso cref="IMongoCollection{TDocument}" /></returns>
         protected IMongoCollection<TEntity> GetCollection<TEntity>(string collectionName)
         {
             return _dbFactory.CreateCollectionIfNotExist<TEntity>(collectionName);

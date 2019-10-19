@@ -25,6 +25,7 @@
   <ItemGroup>
     <Folder Include="Domain\Commands\" />
     <Folder Include="Infrastructure\CommandHandler\" />
+    <Folder Include="Infrastructure\Mappers\" />
   </ItemGroup>
 
   <ItemGroup>

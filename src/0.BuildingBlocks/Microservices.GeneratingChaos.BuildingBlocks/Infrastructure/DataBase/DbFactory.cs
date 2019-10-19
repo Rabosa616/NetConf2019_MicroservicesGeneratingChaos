@@ -4,19 +4,27 @@ using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.DataBase
 {
-    /// <summary>Contains all the helper methods that interact with MongoDb.</summary>
+    /// <summary>
+    /// Contains all the helper methods that interact with MongoDb.
+    /// </summary>
     /// <seealso cref="Agrira.Api.Infrastructure.DataBase.IDbFactory" />
     public class DbFactory : IDbFactory
     {
+        /// <summary>
+        /// The configuration
+        /// </summary>
         private readonly DbConfiguration _configuration;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DbFactory"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <exception cref="ArgumentNullException">configuration</exception>
         public DbFactory(DbConfiguration configuration)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -36,7 +44,6 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.DataBase
         /// Creates a MongoDb collection if it does not exists.
         /// </summary>
         /// <typeparam name="T">The type of the collection to create</typeparam>
-        /// <param name="dbConfiguration">Configuration to connects to the MongoDB server</param>
         /// <param name="collectionName">Name of the collection to create</param>
         /// <returns>Returns the MongoCollection</returns>
         public IMongoCollection<T> CreateCollectionIfNotExist<T>(string collectionName)
@@ -48,11 +55,8 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.DataBase
         /// Creates a MongoDb collection if it does not exists.
         /// </summary>
         /// <typeparam name="T">The type of the collection to create</typeparam>
-        /// <param name="dbConfiguration">Configuration to connects to the MongoDB server</param>
         /// <param name="collectionName">Name of the collection to create</param>
-        /// <param name="registerMapId">
-        /// Optional. Set to true if the entity needs to map to an ID property
-        /// </param>
+        /// <param name="registerMapId">Optional. Set to true if the entity needs to map to an ID property</param>
         /// <returns>Returns the MongoCollection</returns>
         public IMongoCollection<T> CreateCollectionIfNotExist<T>(string collectionName, bool registerMapId)
         {

@@ -13,21 +13,26 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModul
     public class ApplicationModule
         : Module
     {
+        /// <summary>
+        /// The configuration
+        /// </summary>
         private IConfiguration _configuration;
 
-        /// <summary>Initializes a new instance of the <see cref="ApplicationModule"/> class.</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationModule" /> class.
+        /// </summary>
         /// <param name="configuration">The configuration.</param>
         public ApplicationModule(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
-        /// <summary>Override to add registrations to the container.</summary>
+        /// <summary>
+        /// Override to add registrations to the container.
+        /// </summary>
         /// <param name="builder">The builder through which components can be
         /// registered.</param>
-        /// <remarks>
-        /// Note that the ContainerBuilder parameter is unique to this module.
-        /// </remarks>
+        /// <remarks>Note that the ContainerBuilder parameter is unique to this module.</remarks>
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<IdGenerator>()
