@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microservices.GeneratingChaos.UI.Data;
+using Microservices.GeneratingChaos.UI.Extensions;
 
 namespace Microservices.GeneratingChaos.UI
 {
@@ -27,7 +27,8 @@ namespace Microservices.GeneratingChaos.UI
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+
+            services.AddHttp(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
