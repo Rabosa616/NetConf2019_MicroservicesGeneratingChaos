@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Microservices.GeneratingChaos.Services.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v1/[controller]")]
     public class CityController : ControllerBase
     {
         private readonly ICityRepository _cityRepository;
