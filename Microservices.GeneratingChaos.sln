@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "k8s", "k8s", "{5DE80E80-7F2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3F1F90F1-F17E-48C2-BF21-E543D3012D11}"
 	ProjectSection(SolutionItems) = preProject
+		.env = .env
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -29,6 +30,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.GeneratingChaos.BuildingBlocks", "src\0.BuildingBlocks\Microservices.GeneratingChaos.BuildingBlocks\Microservices.GeneratingChaos.BuildingBlocks.csproj", "{AE1AA63B-AF22-46E0-B1F5-D98177EBBD9F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.GeneratingChaos.Services.Api", "src\1.Services\Microservices.GeneratingChaos.Services.Api\Microservices.GeneratingChaos.Services.Api.csproj", "{49557E3D-7F08-4249-8A2C-55C0B86EC0E4}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{397781D9-AED3-4B15-B29C-12ACFB9445DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.GeneratingChaos.Services.Weather", "src\1.Services\Microservices.GeneratingChaos.Services.Weather\Microservices.GeneratingChaos.Services.Weather.csproj", "{16B37632-8928-42E0-BB37-B775E41EB9D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +53,14 @@ Global
 		{49557E3D-7F08-4249-8A2C-55C0B86EC0E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49557E3D-7F08-4249-8A2C-55C0B86EC0E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49557E3D-7F08-4249-8A2C-55C0B86EC0E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{397781D9-AED3-4B15-B29C-12ACFB9445DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{397781D9-AED3-4B15-B29C-12ACFB9445DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{397781D9-AED3-4B15-B29C-12ACFB9445DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{397781D9-AED3-4B15-B29C-12ACFB9445DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16B37632-8928-42E0-BB37-B775E41EB9D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B37632-8928-42E0-BB37-B775E41EB9D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B37632-8928-42E0-BB37-B775E41EB9D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B37632-8928-42E0-BB37-B775E41EB9D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +72,7 @@ Global
 		{815D6BC9-A091-476E-BB03-B8E77065B041} = {188A721B-1938-4E32-84BC-8B73E3CA2143}
 		{AE1AA63B-AF22-46E0-B1F5-D98177EBBD9F} = {39CB55F6-A8BE-442B-9559-1B8F1B255D5D}
 		{49557E3D-7F08-4249-8A2C-55C0B86EC0E4} = {78EFC3D9-4211-4DAE-BB5E-D788C0DF585F}
+		{16B37632-8928-42E0-BB37-B775E41EB9D4} = {78EFC3D9-4211-4DAE-BB5E-D788C0DF585F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1EC49E9F-59F8-4939-BBF5-E0B6447ED254}

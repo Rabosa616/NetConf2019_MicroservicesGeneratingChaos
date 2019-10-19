@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microservices.GeneratingChaos.Services.Api</name>
+    </assembly>
+    <members>
+        <member name="T:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.ApplicationModule">
+            <summary>
+            Application Modile for Autofac
+            </summary>
+            <seealso cref="T:Autofac.Module" />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.ApplicationModule.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>Initializes a new instance of the <see cref="T:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.ApplicationModule"/> class.</summary>
+            <param name="configuration">The configuration.</param>
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.ApplicationModule.Load(Autofac.ContainerBuilder)">
+            <summary>Override to add registrations to the container.</summary>
+            <param name="builder">The builder through which components can be
+            registered.</param>
+            <remarks>
+            Note that the ContainerBuilder parameter is unique to this module.
+            </remarks>
+        </member>
+        <member name="T:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.MediatorModule">
+            <summary>
+            Mediator Module class for autofac
+            </summary>
+            <seealso cref="T:Autofac.Module" />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.MediatorModule.Load(Autofac.ContainerBuilder)">
+            <summary>Override to add registrations to the container.</summary>
+            <param name="builder">The builder through which components can be
+            registered.</param>
+            <remarks>
+            Note that the ContainerBuilder parameter is unique to this module.
+            </remarks>
+        </member>
+        <member name="T:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.RepositoryModules">
+            <summary>
+            Repository registration module
+            </summary>
+            <seealso cref="!:Agrira.Api.Infrastructure.Autofac.RepositoryModule" />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.RepositoryModules.#ctor(Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.DataBase.IDbFactory)">
+            <summary>Initializes a new instance of the <see cref="T:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.RepositoryModules"/> class.</summary>
+            <param name="dbFactory">The database factory.</param>
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules.RepositoryModules.Load(Autofac.ContainerBuilder)">
+            <summary>
+            Register all repositories using <see cref="T:Autofac.ContainerBuilder"/>
+            </summary>
+            <param name="builder">Builder to register all repositories</param>
+        </member>
+        <member name="T:Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.CityRepository">
+            <inheridoc />
+        </member>
+        <member name="P:Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.CityRepository.Query">
+            <inheridoc />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.CityRepository.AddAsync(Microservices.GeneratingChaos.Services.Api.Domain.Entities.City)">
+            <inheridoc />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.CityRepository.AddManyAsync(System.Collections.Generic.IEnumerable{Microservices.GeneratingChaos.Services.Api.Domain.Entities.City})">
+            <inheridoc />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.CityRepository.GetAllAsync">
+            <inheridoc />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.CityRepository.GetByIdAsync(System.Guid)">
+            <inheridoc />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.CityRepository.RemoveAsync(System.Guid)">
+            <inheridoc />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.CityRepository.UpdateAsync(Microservices.GeneratingChaos.Services.Api.Domain.Entities.City)">
+            <inheridoc />
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Program.Main(System.String[])">
+            <summary>Defines the entry point of the application.</summary>
+            <param name="args">The arguments.</param>
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Program.BuildWebHost(System.String[])">
+            <summary>Builds the web host.</summary>
+            <param name="args">The arguments.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Microservices.GeneratingChaos.Services.Api.Startup.Configuration">
+            <summary>Gets the configuration.</summary>
+            <value>The configuration.</value>
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>Initializes a new instance of the <see cref="T:Microservices.GeneratingChaos.Services.Api.Startup"/> class.</summary>
+            <param name="configuration">The configuration.</param>
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Api.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>Configures the services.</summary>
+            <param name="services">The services.</param>
+        </member>
+    </members>
+</doc>

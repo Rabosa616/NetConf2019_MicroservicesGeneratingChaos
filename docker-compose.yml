@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  microservices.generatingchaos.weather.data:
+    image: mongo
+
+  microservices.generatingchaos.api.data:
+    image: mongo
+
+  microservices.generatingchaos.eventbus:
+    image: rabbitmq:3-management-alpine
+
+  microservices.generatingchaos.services.api:
+    image: ${DOCKER_REGISTRY-}microservicesgeneratingchaosservicesapi
+    build:
+      context: .
+      dockerfile: src/1.Services/Microservices.GeneratingChaos.Services.Api/Dockerfile
+
+  microservices.generatingchaos.services.weather:
+    image: ${DOCKER_REGISTRY-}microservicesgeneratingchaosservicesweather
+    build:
+      context: .
+      dockerfile: src/1.Services/Microservices.GeneratingChaos.Services.Weather/Dockerfile
+
+  microservices.generatingchaos.ui:
+    image: ${DOCKER_REGISTRY-}microservicesgeneratingchaosui
+    build:
+      context: .
+      dockerfile: src/2.UI/Microservices.GeneratingChaos.UI/Dockerfile

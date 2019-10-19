@@ -1,7 +1,9 @@
+using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Microservices.GeneratingChaos.Services.Api
+
+namespace Microservices.GeneratingChaos.Services.Weather
 {
     public class Program
     {

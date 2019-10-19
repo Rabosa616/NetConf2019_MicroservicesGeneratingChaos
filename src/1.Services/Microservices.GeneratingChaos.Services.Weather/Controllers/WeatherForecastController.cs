@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microservices.GeneratingChaos.Services.Api.Domain.Models;
+using Microservices.GeneratingChaos.Services.Weather.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Microservices.GeneratingChaos.Services.Api.Controllers
+namespace Microservices.GeneratingChaos.Services.Weather.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -20,18 +19,16 @@ namespace Microservices.GeneratingChaos.Services.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(Guid cityId)
+        public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
-            return Ok(Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
-                CityId = cityId,
                 Date = DateTime.Now.AddDays(index),
-                Temperature = rng.Next(-20, 55),
-                Humidity = rng.Next(-20, 55),
-                Pressure = rng.Next(-20, 55)
+                Temperature = rng.Next(-20, 55)
+                //Summary = Summaries[rng.Next(Summaries.Length)]
             })
-            .ToArray());
+            .ToArray();
         }
     }
 }
