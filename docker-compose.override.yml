@@ -22,6 +22,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - DbConnectionString=mongodb://microservices.generatingchaos.api.data
       - DatabaseName=Api
+      - WeatherServiceUrl=http://microservices.generatingchaos.services.weather/
     ports:
       - "5001:80"
 

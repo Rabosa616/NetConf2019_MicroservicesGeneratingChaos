@@ -6,8 +6,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
 {
+    /// <summary>
+    /// Class MvcRegistrationExtension.
+    /// </summary>
     public static class MvcRegistrationExtension
     {
+        /// <summary>
+        /// Adds the custom MVC.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="services">The services.</param>
+        /// <returns>IServiceCollection.</returns>
         public static IServiceCollection AddCustomMvc<T>(this IServiceCollection services)
         {
             services.AddAutoMapper();
@@ -16,6 +25,7 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
             {
                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));
             })
+                .AddNewtonsoftJson()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<T>())
                 .AddControllersAsServices();  //Injecting Controllers themselves thru DI

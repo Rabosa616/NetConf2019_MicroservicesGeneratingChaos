@@ -1,6 +1,8 @@
 ﻿using Autofac;
+using Microservices.GeneratingChaos.BuildingBlocks.Extensions;
 using Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Generators;
 using Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Generators.Interfaces;
+using Microservices.GeneratingChaos.Services.Weather.Infrastructure.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
@@ -13,21 +15,26 @@ namespace Microservices.GeneratingChaos.Services.Weather.Infrastructure.AutofacM
     public class ApplicationModule
         : Module
     {
+        /// <summary>
+        /// The configuration
+        /// </summary>
         private IConfiguration _configuration;
 
-        /// <summary>Initializes a new instance of the <see cref="ApplicationModule"/> class.</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationModule" /> class.
+        /// </summary>
         /// <param name="configuration">The configuration.</param>
         public ApplicationModule(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
-        /// <summary>Override to add registrations to the container.</summary>
+        /// <summary>
+        /// Override to add registrations to the container.
+        /// </summary>
         /// <param name="builder">The builder through which components can be
         /// registered.</param>
-        /// <remarks>
-        /// Note that the ContainerBuilder parameter is unique to this module.
-        /// </remarks>
+        /// <remarks>Note that the ContainerBuilder parameter is unique to this module.</remarks>
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<IdGenerator>()
@@ -41,6 +48,12 @@ namespace Microservices.GeneratingChaos.Services.Weather.Infrastructure.AutofacM
             builder.RegisterType<HttpContextAccessor>()
                    .As<IHttpContextAccessor>()
                    .SingleInstance();
+
+            var profiles = ContainerBuilderExtensions.GetProfilesTypes<WeatherForecastProfile>();
+            foreach (var profile in profiles)
+            {
+                builder.RegisterType(profile).InstancePerLifetimeScope();
+            }
         }
     }
 }

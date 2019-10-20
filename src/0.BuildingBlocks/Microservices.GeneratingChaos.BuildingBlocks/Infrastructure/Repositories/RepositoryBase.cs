@@ -3,8 +3,15 @@ using MongoDB.Driver;
 
 namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Class RepositoryBase.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the t entity.</typeparam>
     public class RepositoryBase<TEntity> where TEntity : Entity
     {
+        /// <summary>
+        /// The collection
+        /// </summary>
         protected readonly IMongoCollection<TEntity> _collection;
 
         /// <summary>

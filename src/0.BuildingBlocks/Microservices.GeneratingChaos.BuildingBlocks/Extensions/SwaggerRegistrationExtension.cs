@@ -1,17 +1,25 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
 namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
 {
-   public static class SwaggerRegistrationExtension
+    /// <summary>
+    /// Class SwaggerRegistrationExtension.
+    /// </summary>
+    public static class SwaggerRegistrationExtension
     {
+        /// <summary>
+        /// Adds the swagger.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="version">The version.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="description">The description.</param>
+        /// <returns>IServiceCollection.</returns>
         public static IServiceCollection AddSwagger(this IServiceCollection services, string version, string title, string description)
         {
             services.AddSwaggerGen(options =>
@@ -33,6 +41,13 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Uses the swagger.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="version">The version.</param>
+        /// <returns>IApplicationBuilder.</returns>
         public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, string name, string version)
         {
             app.UseSwagger()

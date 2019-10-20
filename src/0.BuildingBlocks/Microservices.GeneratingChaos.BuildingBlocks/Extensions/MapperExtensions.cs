@@ -8,7 +8,9 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
     /// </summary>
     public static class MapperExtensions
     {
-        /// <summary>Ignores the unmapped.</summary>
+        /// <summary>
+        /// Ignores the unmapped.
+        /// </summary>
         /// <param name="profile">The profile.</param>
         /// <exception cref="ArgumentNullException">profile</exception>
         public static void IgnoreUnmapped(this IProfileExpression profile)
@@ -20,7 +22,9 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
             profile.ForAllMaps(IgnoreUnmappedProperties);
         }
 
-        /// <summary>Ignores the unmapped.</summary>
+        /// <summary>
+        /// Ignores the unmapped.
+        /// </summary>
         /// <param name="profile">The profile.</param>
         /// <param name="filter">The filter.</param>
         /// <exception cref="ArgumentNullException">profile</exception>
@@ -39,7 +43,9 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
             });
         }
 
-        /// <summary>Ignores the unmapped.</summary>
+        /// <summary>
+        /// Ignores the unmapped.
+        /// </summary>
         /// <param name="profile">The profile.</param>
         /// <param name="src">The source.</param>
         /// <param name="dest">The dest.</param>
@@ -48,7 +54,9 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
             profile.IgnoreUnmapped((TypeMap map) => map.SourceType == src && map.DestinationType == dest);
         }
 
-        /// <summary>Ignores the unmapped.</summary>
+        /// <summary>
+        /// Ignores the unmapped.
+        /// </summary>
         /// <typeparam name="TSrc">The type of the source.</typeparam>
         /// <typeparam name="TDest">The type of the dest.</typeparam>
         /// <param name="profile">The profile.</param>
@@ -57,6 +65,11 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
             profile.IgnoreUnmapped(typeof(TSrc), typeof(TDest));
         }
 
+        /// <summary>
+        /// Ignores the unmapped properties.
+        /// </summary>
+        /// <param name="map">The map.</param>
+        /// <param name="expr">The expr.</param>
         private static void IgnoreUnmappedProperties(TypeMap map, IMappingExpression expr)
         {
             foreach (string propName in map.GetUnmappedPropertyNames())

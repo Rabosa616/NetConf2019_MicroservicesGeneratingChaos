@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
+using MediatR;
+using Microservices.GeneratingChaos.Services.Weather.Domain.Commands;
 using Microservices.GeneratingChaos.Services.Weather.Domain.Models;
 using Microservices.GeneratingChaos.Services.Weather.Infrastructure.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -18,29 +21,77 @@ namespace Microservices.GeneratingChaos.Services.Weather.Controllers
     [Route("v1/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
+        /// <summary>
+        /// The logger
+        /// </summary>
         private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IWeatherRepository _weatherRepository;
+        /// <summary>
+        /// The mediator
+        /// </summary>
+        private readonly IMediator _mediator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WeatherForecastController"/> class.
+        /// Initializes a new instance of the <see cref="WeatherForecastController" /> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
-        /// <param name="weatherRepository">The weather repository.</param>
+        /// <param name="mediator">The mediator.</param>
         /// <exception cref="ArgumentNullException">logger</exception>
-        /// <exception cref="ArgumentNullException">weatherRepository</exception>
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, 
-                                         IWeatherRepository weatherRepository)
+        /// <exception cref="ArgumentNullException">mediator</exception>
+        /// <exception cref="ArgumentNullException">logger</exception>
+        public WeatherForecastController(ILogger<WeatherForecastController> logger,
+                                         IMediator mediator)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _weatherRepository = weatherRepository ?? throw new ArgumentNullException(nameof(weatherRepository));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
+        /// <summary>
+        /// get all weather forecasts as an asynchronous operation.
+        /// </summary>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
         [HttpGet]
-        public async Task<IActionResult> Get()
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<WeatherForecast>))]
+        public async Task<IActionResult> GetAllAsync()
         {
-            var allWeatherForecast = await _weatherRepository.GetAllAsync().ConfigureAwait(false);
-            return Ok(allWeatherForecast);
+            var command = new ReadWeatherCommand();
+            var commandResponse = await _mediator.Send(command).ConfigureAwait(false);
+            if (commandResponse == null)
+            {
+                return BadRequest();
+            }
 
+            if (!commandResponse.Succeed)
+            {
+                return BadRequest(commandResponse.Error);
+            }
+
+            return Ok(commandResponse.ResponseDto);
+        }
+
+        /// <summary>
+        /// get all weather forcast by city as an asynchronous operation.
+        /// </summary>
+        /// <param name="cityId">The city identifier.</param>
+        /// <returns>Task&lt;IActionResult&gt;.</returns>
+        [HttpGet("{cityId:guid}")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<WeatherForecast>))]
+        public async Task<IActionResult> GetByCityAsync(Guid cityId)
+        {
+            var command = new ReadWeatherCommand
+            {
+                CityId = cityId
+            };
+
+            var commandResponse = await _mediator.Send(command).ConfigureAwait(false);
+
+            if (!commandResponse.Succeed)
+            {
+                return BadRequest(commandResponse.Error);
+            }
+
+            return Ok(commandResponse.ResponseDto);
         }
     }
 }

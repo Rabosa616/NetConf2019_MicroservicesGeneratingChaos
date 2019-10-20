@@ -12,6 +12,12 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Generators
             return DateTime.Now;
         }
 
+        /// <summary>
+        /// Parses the specified date.
+        /// </summary>
+        /// <param name="date">The date.</param>
+        /// <returns>DateTime.</returns>
+        /// <exception cref="ArgumentNullException">date</exception>
         public DateTime Parse(string date)
         {
             if (string.IsNullOrEmpty(date))
@@ -20,6 +26,12 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Generators
             }
             return DateTime.Parse(date);
         }
+        /// <summary>
+        /// Parses the specified date.
+        /// </summary>
+        /// <param name="date">The date.</param>
+        /// <param name="alternative">The alternative.</param>
+        /// <returns>DateTime.</returns>
         public DateTime Parse(string date, DateTime alternative)
         {
             if (string.IsNullOrEmpty(date))
@@ -29,6 +41,11 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Generators
             return DateTime.Parse(date);
         }
 
+        /// <summary>
+        /// Parses from unix.
+        /// </summary>
+        /// <param name="date">The date.</param>
+        /// <returns>DateTime.</returns>
         public DateTime ParseFromUnix(string date)
         {
             if (string.IsNullOrEmpty(date))

@@ -17,6 +17,7 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
         /// <summary>
         /// The method for creating a configuration.
         /// </summary>
+        /// <typeparam name="Type">The type of the type.</typeparam>
         /// <param name="lifetimeScope">The lifetimescope.</param>
         /// <returns>The mapper configuration.</returns>
         public static MapperConfiguration CreateProfilesConfiguration<Type>(ILifetimeScope lifetimeScope)
@@ -37,7 +38,9 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
         /// The profile collection retrieval method
         /// </summary>
         /// <typeparam name="T">The type of class where profiles coexist in same assembly.</typeparam>
+        /// <param name="scope">The scope.</param>
         /// <returns>The profile enumerable.</returns>
+        /// <exception cref="ArgumentNullException">scope</exception>
         public static IEnumerable<Profile> GetProfiles<T>(ILifetimeScope scope)
         {
             if (scope == null)
@@ -68,6 +71,7 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
         /// <param name="builder">The builder.</param>
         /// <param name="assembly">The assembly.</param>
         /// <param name="factory">The factory.</param>
+        /// <exception cref="ArgumentNullException">assembly</exception>
         public static void RegisterRepositoryModule(this ContainerBuilder builder, Assembly assembly, DbFactory factory)
         {
             if (assembly == null)
@@ -88,6 +92,7 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
         /// <summary>
         /// The register profile method.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="builder">The builder.</param>
         /// <param name="assembly">The assembly.</param>
         public static void RegisterProfiles<T>(this ContainerBuilder builder, Assembly assembly)
