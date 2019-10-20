@@ -37,6 +37,6 @@ services:
   microservices.generatingchaos.ui:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiUrl=http://localhost:5001
+      - ApiUrl=http://host.docker.internal:5001
     ports:
       - "5000:80"

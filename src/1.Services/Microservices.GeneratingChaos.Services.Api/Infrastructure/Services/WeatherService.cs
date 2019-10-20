@@ -52,7 +52,7 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.Services
         /// <exception cref="NotImplementedException"></exception>
         public async Task<IEnumerable<WeatherForecast>> GetByCityAsync(Guid cityId)
         {
-            var responseString = await _httpClient.GetStringAsync($"/weather/{cityId}")
+            var responseString = await _httpClient.GetStringAsync($"v1/weatherforecast/{cityId}")
                                                   .ConfigureAwait(false);
 
             var weatherForecast = JsonConvert.DeserializeObject<List<WeatherForecast>>(responseString);

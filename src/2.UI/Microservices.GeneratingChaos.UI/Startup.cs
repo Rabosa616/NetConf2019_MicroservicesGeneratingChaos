@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microservices.GeneratingChaos.UI.Extensions;
+using Sotsera.Blazor.Toaster.Core.Models;
+using Microservices.GeneratingChaos.UI.Infrastructure.Services.Interfaces;
+using Microservices.GeneratingChaos.UI.Infrastructure.Services;
 
 namespace Microservices.GeneratingChaos.UI
 {
@@ -27,8 +25,16 @@ namespace Microservices.GeneratingChaos.UI
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddTransient<IApiService, ApiService>();
 
             services.AddHttp(Configuration);
+            services.AddToaster(config =>
+            {
+                //example customizations
+                config.PositionClass = Defaults.Classes.Position.TopRight;
+                config.PreventDuplicates = true;
+                config.NewestOnTop = false;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

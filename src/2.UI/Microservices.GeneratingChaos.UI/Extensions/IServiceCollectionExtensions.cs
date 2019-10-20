@@ -16,6 +16,5 @@ namespace Microservices.GeneratingChaos.UI.Extensions
                      BaseAddress = new Uri(configuration["ApiUrl"])
                  };
              });
-
     }
 }

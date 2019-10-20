@@ -1,12 +1,14 @@
 ﻿@page "/fetchdata"
 
 @using Microservices.GeneratingChaos.UI.Domain.Models
+@using Microservices.GeneratingChaos.UI.Infrastructure.Services.Interfaces
 @using Syncfusion.EJ2.Blazor.Grids
 @using Syncfusion.EJ2.Blazor.DropDowns
-@using Syncfusion.EJ2.Blazor.Data
+@inject Sotsera.Blazor.Toaster.IToaster Toaster
 
 @inject IJSRuntime JsRuntime;
 @inject HttpClient Http
+@inject IApiService apiService
 
 <h1>Weather forecast</h1>
 
@@ -14,21 +16,19 @@
 
 <div class="col-lg-12 control-section">
     <div class="control_wrapper">
-        <EjsDropDownList @bind-Value="@SelectedCity" @ref="@Dropdown" TValue="string" PopupHeight="230px" Index=2 Placeholder="Select a city" DataSource="@cities">
+        <EjsDropDownList @bind-Value="@selectedCity" TValue="string" PopupHeight="230px" Placeholder="Select a city" DataSource="@cities">
             <DropDownListFieldSettings Text="Text" Value="ID"></DropDownListFieldSettings>
             <DropDownListEvents ValueChange="@((Action<Syncfusion.EJ2.Blazor.DropDowns.ChangeEventArgs<string>>) (args => OnChange(args)))"></DropDownListEvents>
         </EjsDropDownList>
-        <h1>@SelectedCity</h1>
     </div>
 </div>
 
-@if (forecasts == null && SelectedCity != null)
+
+@if (selectedCity != null)
 {
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="control-section">
+    <hr class="my-4">
+
+    <div class="control-section mb-5">
         <EjsChart Title="Weather forecast">
             <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
             <ChartPrimaryXAxis ValueType="Syncfusion.EJ2.Blazor.Charts.ValueType.DateTime" LabelFormat="y" IntervalType="IntervalType.Months" EdgeLabelPlacement="EdgeLabelPlacement.Shift">
@@ -78,14 +78,11 @@ else
 }
 
 @code {
-    EjsDropDownList<string> Dropdown;
     WheatherForecastDto[] forecasts;
-    List<CityDropdown> cities = new List<CityDropdown>() { new CityDropdown { ID = Guid.NewGuid().ToString(), Text = "BCN" },
-        new CityDropdown { ID = Guid.NewGuid().ToString(), Text = "london" },
-        new CityDropdown { ID = Guid.NewGuid().ToString(), Text = "masachuuseee" },
-        new CityDropdown { ID = Guid.NewGuid().ToString(), Text = "bilbado" }};
+    List<CityDropdown> cities = new List<CityDropdown>();
     List<LineChartData> chartData = new List<LineChartData>();
-    string SelectedCity;
+    string selectedCity;
+    bool isLoading = false;
 
     public class CityDropdown
     {
@@ -95,28 +92,54 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await GetCities();
+
     }
 
-    private void OnChange(Syncfusion.EJ2.Blazor.DropDowns.ChangeEventArgs<string> args)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        this.GetCityWeather(args.Value);
+        if (firstRender)
+        {
+            await GetCities();
+            StateHasChanged();
+        }
+    }
+
+    private async void OnChange(Syncfusion.EJ2.Blazor.DropDowns.ChangeEventArgs<string> args)
+    {
+        this.isLoading = true;
+        await this.GetCityWeather(args.Value);
+        this.isLoading = false;
+        StateHasChanged();
     }
 
     private async Task GetCityWeather(string cityId)
     {
-        forecasts = await Http.GetJsonAsync<WheatherForecastDto[]>("WeatherForecast");
-        foreach (var forecast in forecasts)
+        try
         {
-            chartData.Add(new LineChartData { xValue = new DateTime(forecast.Date.Year, forecast.Date.Month, forecast.Date.Day), temperatureValue = forecast.Temperature, humidityValue = forecast.Humidity, pressureValue = forecast.Pressure });
+            var foreCastResponse = await apiService.GetWeatherByCityIdAsync(new Guid(cityId)).ConfigureAwait(false);
+            forecasts = foreCastResponse.ToArray();            
+            chartData = new List<LineChartData>();
+            foreach (var forecast in forecasts)
+            {
+                chartData.Add(new LineChartData { xValue = new DateTime(forecast.Date.Year, forecast.Date.Month, forecast.Date.Day), temperatureValue = forecast.Temperature, humidityValue = forecast.Humidity, pressureValue = forecast.Pressure });
+            }
         }
-        StateHasChanged();
+        catch (Exception e)
+        {
+            Toaster.Error(e.Message);
+        }
     }
 
     private async Task GetCities()
     {
-        //cities = await Http.GetJsonAsync<CityDto[]>("api/v1/city");
+        try
+        {
+            var response = await apiService.GetCitiesAsync().ConfigureAwait(false);
+            cities.AddRange(response.Select(cityDto => new CityDropdown { ID = cityDto.CityId.ToString(), Text = $"{cityDto.CityName} ({cityDto.Country})" }));            
+        }
+        catch (Exception e)
+        {
+            Toaster.Error(e.Message);
+        }
     }
-
-
 }
