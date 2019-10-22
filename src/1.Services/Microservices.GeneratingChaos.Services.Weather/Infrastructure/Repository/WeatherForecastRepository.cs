@@ -65,7 +65,7 @@ namespace Microservices.GeneratingChaos.Services.Weather.Infrastructure.Reposito
             entity.Id = _idGenerator.GenerateNewGuidId();
             entity.Created = _date.Now();
             entity.Modified = entity.Created;
-            await _collection.InsertOneAsync(entity).ConfigureAwait(false);
+            await ExecuteAsync(() => _collection.InsertOneAsync(entity)).ConfigureAwait(false);
             return entity;
         }
 
@@ -101,8 +101,11 @@ namespace Microservices.GeneratingChaos.Services.Weather.Infrastructure.Reposito
         /// <inheridoc />
         public async Task<IEnumerable<WeatherForecast>> GetAllAsync()
         {
-            var cursor = await _collection.FindAsync(c => true).ConfigureAwait(false);
-            return await cursor.ToListAsync().ConfigureAwait(false);
+            return await ExecuteAsync<IEnumerable<WeatherForecast>>(async () =>
+            {
+                var cursor = await _collection.FindAsync(c => true).ConfigureAwait(false);
+                return await cursor.ToListAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -112,8 +115,11 @@ namespace Microservices.GeneratingChaos.Services.Weather.Infrastructure.Reposito
         /// <returns>Task&lt;IEnumerable&lt;WeatherForecast&gt;&gt;.</returns>
         public async Task<IEnumerable<WeatherForecast>> GetByCityId(Guid cityId)
         {
-            var cursor = await _collection.FindAsync(c => c.CityId == cityId).ConfigureAwait(false);
-            return await cursor.ToListAsync().ConfigureAwait(false);
+            return await ExecuteAsync<IEnumerable<WeatherForecast>>(async () =>
+            {
+                var cursor = await _collection.FindAsync(c => c.CityId == cityId).ConfigureAwait(false);
+                return await cursor.ToListAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -124,8 +130,11 @@ namespace Microservices.GeneratingChaos.Services.Weather.Infrastructure.Reposito
         /// <inheridoc />
         public async Task<WeatherForecast> GetByIdAsync(Guid id)
         {
-            var cursor = await _collection.FindAsync(c => c.Id == id).ConfigureAwait(false);
-            return await cursor.FirstOrDefaultAsync().ConfigureAwait(false);
+            return await ExecuteAsync<WeatherForecast>(async () =>
+            {
+                var cursor = await _collection.FindAsync(c => c.Id == id).ConfigureAwait(false);
+                return await cursor.FirstOrDefaultAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -136,7 +145,7 @@ namespace Microservices.GeneratingChaos.Services.Weather.Infrastructure.Reposito
         /// <inheridoc />
         public async Task RemoveAsync(Guid id)
         {
-            await _collection.DeleteManyAsync(c => c.CityId == id).ConfigureAwait(false);
+            await ExecuteAsync(() => _collection.FindOneAndDeleteAsync(f => f.CityId == id)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -147,7 +156,7 @@ namespace Microservices.GeneratingChaos.Services.Weather.Infrastructure.Reposito
         public async Task UpdateAsync(WeatherForecast entity)
         {
             entity.Modified = _date.Now();
-            await _collection.FindOneAndReplaceAsync(c => c.Id == entity.Id, entity).ConfigureAwait(false);
+            await ExecuteAsync(() => _collection.FindOneAndReplaceAsync(f => f.Id == entity.Id, entity)).ConfigureAwait(false);
         }
     }
 }

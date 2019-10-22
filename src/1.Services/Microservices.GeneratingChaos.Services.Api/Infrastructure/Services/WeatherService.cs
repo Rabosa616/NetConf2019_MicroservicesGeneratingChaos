@@ -1,6 +1,8 @@
 ﻿using Microservices.GeneratingChaos.Services.Api.Domain.Models;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.Services.Interfaces;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -37,10 +39,14 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.Services
         /// <exception cref="NotImplementedException"></exception>
         public async Task<IEnumerable<WeatherForecast>> GetAllAsync()
         {
-            var responseString = await _httpClient.GetStringAsync("v1/weatherforecast/")
-                                                      .ConfigureAwait(false);
-            //var item = await response.Content.ReadAsStringAsync();
-            var weatherForecast = JsonConvert.DeserializeObject<List<WeatherForecast>>(responseString);
+            var policy = CreatePolicy();
+
+            var response = await policy.ExecuteAsync<string>(async () =>
+            {
+                return await _httpClient.GetStringAsync($"v1/weatherforecast/").ConfigureAwait(false);
+            }).ConfigureAwait(false);
+            
+            var weatherForecast = JsonConvert.DeserializeObject<List<WeatherForecast>>(response);
             return weatherForecast;
         }
 
@@ -52,11 +58,22 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.Services
         /// <exception cref="NotImplementedException"></exception>
         public async Task<IEnumerable<WeatherForecast>> GetByCityAsync(Guid cityId)
         {
-            var responseString = await _httpClient.GetStringAsync($"v1/weatherforecast/{cityId}")
-                                                  .ConfigureAwait(false);
+            var policy = CreatePolicy();
 
-            var weatherForecast = JsonConvert.DeserializeObject<List<WeatherForecast>>(responseString);
+            var response = await policy.ExecuteAsync<string>(async () =>
+            {
+                return await _httpClient.GetStringAsync($"v1/weatherforecast/{cityId}").ConfigureAwait(false);
+            }).ConfigureAwait(false);
+
+            var weatherForecast = JsonConvert.DeserializeObject<List<WeatherForecast>>(response);
             return weatherForecast;
+        }
+
+        private static Polly.Retry.AsyncRetryPolicy CreatePolicy()
+        {
+            var delay = Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(2), retryCount: 5);
+            var policy = Policy.Handle<Exception>().WaitAndRetryAsync(delay);
+            return policy;
         }
     }
 }

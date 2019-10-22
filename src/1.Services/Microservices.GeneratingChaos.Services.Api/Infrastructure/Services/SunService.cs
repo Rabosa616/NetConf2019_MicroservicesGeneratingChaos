@@ -1,6 +1,8 @@
 ﻿using Microservices.GeneratingChaos.Services.Api.Domain.Models;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.Services.Interfaces;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -37,10 +39,15 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.Services
         /// <exception cref="NotImplementedException"></exception>
         public async Task<Sun> GetByCityAsync(Guid cityId)
         {
-            var responseString = await _httpClient.GetStringAsync($"v1/sun/{cityId}")
-                                                          .ConfigureAwait(false);
+            var delay = Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(2), retryCount: 5);
+            var policy = Policy.Handle<Exception>().WaitAndRetryAsync(delay);
 
-            var sunResponse = JsonConvert.DeserializeObject<Sun>(responseString);
+            var response = await policy.ExecuteAsync<string>(async () =>
+            {
+                return await _httpClient.GetStringAsync($"v1/sun/{cityId}").ConfigureAwait(false);
+            }).ConfigureAwait(false);
+
+            var sunResponse = JsonConvert.DeserializeObject<Sun>(response);
             return sunResponse;
         }
     }

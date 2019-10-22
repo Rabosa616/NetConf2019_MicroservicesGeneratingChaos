@@ -65,7 +65,7 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository
             entity.Id = _idGenerator.GenerateNewGuidId();
             entity.Created = _date.Now();
             entity.Modified = entity.Created;
-            await _collection.InsertOneAsync(entity).ConfigureAwait(false);
+            await ExecuteAsync(() => _collection.InsertOneAsync(entity)).ConfigureAwait(false);            
             return entity;
         }
 
@@ -99,8 +99,11 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository
         /// <inheridoc />
         public async Task<IEnumerable<City>> GetAllAsync()
         {
-            var cursor = await _collection.FindAsync(c => true).ConfigureAwait(false);
-            return await cursor.ToListAsync().ConfigureAwait(false);
+            return await ExecuteAsync<IEnumerable<City>>(async () =>
+            {
+                var cursor = await _collection.FindAsync(c => true).ConfigureAwait(false);
+                return await cursor.ToListAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -111,8 +114,11 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository
         /// <inheridoc />
         public async Task<City> GetByIdAsync(Guid id)
         {
-            var cursor = await _collection.FindAsync(c => c.CityId == id).ConfigureAwait(false);
-            return await cursor.FirstOrDefaultAsync().ConfigureAwait(false);
+            return await ExecuteAsync<City>(async () =>
+            {
+                var cursor = await _collection.FindAsync(c => c.CityId == id).ConfigureAwait(false);
+                return await cursor.FirstOrDefaultAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -122,7 +128,7 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository
         /// <inheridoc />
         public async Task RemoveAsync(Guid id)
         {
-            await _collection.DeleteManyAsync(c => c.CityId == id).ConfigureAwait(false);
+            await ExecuteAsync(() => _collection.FindOneAndDeleteAsync(f => f.CityId == id)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -133,7 +139,7 @@ namespace Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository
         public async Task UpdateAsync(City entity)
         {
             entity.Modified = _date.Now();
-            await _collection.FindOneAndReplaceAsync(c => c.CityId == entity.Id, entity).ConfigureAwait(false);
+            await ExecuteAsync(() => _collection.FindOneAndReplaceAsync(f => f.Id == entity.Id, entity)).ConfigureAwait(false);
         }
     }
 }

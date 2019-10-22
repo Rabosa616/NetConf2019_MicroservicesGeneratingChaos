@@ -1,6 +1,9 @@
 ﻿using Microservices.GeneratingChaos.UI.Domain.Models;
 using Microservices.GeneratingChaos.UI.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
+using Polly.Retry;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -34,7 +37,14 @@ namespace Microservices.GeneratingChaos.UI.Infrastructure.Services
         /// <returns>Task&lt;IEnumerable&lt;WheatherForecastDto&gt;&gt;.</returns>
         public async Task<IEnumerable<WheatherForecastDto>> GetWeatherByCityIdAsync(Guid cityId)
         {
-            return await Http.GetJsonAsync<WheatherForecastDto[]>($"api/v1/WeatherForecast/{cityId}").ConfigureAwait(false);
+            var policy = CreatePolicy();
+
+            var response = await policy.ExecuteAsync<WheatherForecastDto[]>(async () =>
+            {
+                return await Http.GetJsonAsync<WheatherForecastDto[]>($"api/v1/WeatherForecast/{cityId}").ConfigureAwait(false);
+            }).ConfigureAwait(false);
+
+            return response;
         }
 
         /// <summary>
@@ -43,7 +53,20 @@ namespace Microservices.GeneratingChaos.UI.Infrastructure.Services
         /// <returns>Task&lt;IEnumerable&lt;CityDto&gt;&gt;.</returns>
         public async Task<IEnumerable<CityDto>> GetCitiesAsync()
         {
-            return  await Http.GetJsonAsync<CityDto[]>("api/v1/City").ConfigureAwait(false);
+            var policy = CreatePolicy();
+            var response = await policy.ExecuteAsync<CityDto[]>(async () =>
+            {
+                return await Http.GetJsonAsync<CityDto[]>("api/v1/City").ConfigureAwait(false);
+            }).ConfigureAwait(false);
+
+            return response;            
+        }
+
+        private static AsyncRetryPolicy CreatePolicy()
+        {
+            var delay = Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(2), retryCount: 5);
+            var policy = Policy.Handle<Exception>().WaitAndRetryAsync(delay);
+            return policy;
         }
     }
 }
