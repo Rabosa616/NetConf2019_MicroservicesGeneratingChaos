@@ -23,6 +23,8 @@ services:
       - DbConnectionString=mongodb://microservices.generatingchaos.api.data
       - DatabaseName=Api
       - WeatherServiceUrl=http://microservices.generatingchaos.services.weather/
+      - RedisCacheUrl=microservices.generatingchaos.api.cache
+      - RedisCacheInstance=ApiCache
     ports:
       - "5001:80"
 
@@ -31,6 +33,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - DbConnectionString=mongodb://microservices.generatingchaos.weather.data
       - DatabaseName=Weather
+      - RedisCacheUrl=microservices.generatingchaos.weather.cache
+      - RedisCacheInstance=WeatherServiceCache
     ports:
       - "5002:80"
 

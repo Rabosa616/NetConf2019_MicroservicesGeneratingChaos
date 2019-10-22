@@ -1,17 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microservices.GeneratingChaos.BuildingBlocks.Extensions;
 using Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.DataBase;
+using Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Generators.Interfaces;
 using Microservices.GeneratingChaos.Services.Api.Domain.Entities;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules;
+using Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.Interfaces;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.Services;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -51,6 +56,12 @@ namespace Microservices.GeneratingChaos.Services.Api
                     .AddSwagger("v1", "Microservices Generating Chaos Api", "Sample API for netconf 2019")
                     .AddOptions();
 
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration["RedisCacheUrl"];
+                options.InstanceName = Configuration["RedisCacheInstance"];
+            });
+
             services.AddHttpClient<IWeatherService, WeatherService>(client =>
             {
                 client.BaseAddress = new Uri(Configuration["WeatherServiceUrl"]);
@@ -78,7 +89,13 @@ namespace Microservices.GeneratingChaos.Services.Api
         /// <param name="app">The application.</param>
         /// <param name="env">The env.</param>
         /// <param name="loggerFactory">The logger factory.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        /// <param name="lifetime">The lifetime.</param>
+        /// <param name="cache">The cache.</param>
+        public void Configure(IApplicationBuilder app,
+                              IWebHostEnvironment env,
+                              ILoggerFactory loggerFactory,
+                              IHostApplicationLifetime lifetime,
+                              IDistributedCache cache)
         {
             var pathBase = Configuration["PATH_BASE"];
             if (!string.IsNullOrEmpty(pathBase))
@@ -104,21 +121,33 @@ namespace Microservices.GeneratingChaos.Services.Api
                 endpoints.MapControllers();
             });
             app.UseSwagger("Microservices Generating Chaos Api V1", "v1");
-            SeedData(app);
+            SeedData(app, lifetime, cache);
         }
 
         /// <summary>
         /// Seeds the data.
         /// </summary>
-        /// <param name="applicationBuilder">The application builder.</param>
-        private void SeedData(IApplicationBuilder applicationBuilder)
+        /// <param name="app">The application builder.</param>
+        /// <param name="lifetime">The lifetime.</param>
+        /// <param name="cache">The cache.</param>
+        private void SeedData(IApplicationBuilder app,
+                              IHostApplicationLifetime lifetime,
+                              IDistributedCache cache)
         {
             var citySeedFile = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().FullName), "Seed", "CitySeeder.json");
             if (File.Exists(citySeedFile))
             {
-                var cityRepository = applicationBuilder.ApplicationServices.GetRequiredService<ICityRepository>();
+                var cityRepository = app.ApplicationServices.GetRequiredService<ICityRepository>();
                 var cities = JsonConvert.DeserializeObject<List<City>>(File.ReadAllText(citySeedFile, System.Text.Encoding.UTF7));
                 cityRepository.AddManyAsync(cities).Wait();
+
+                lifetime.ApplicationStarted.Register(() =>
+                {
+                    var weatherEncoded = Encoding.UTF8.GetBytes(File.ReadAllText(citySeedFile, System.Text.Encoding.UTF8));
+                    var options = new DistributedCacheEntryOptions()
+                                            .SetSlidingExpiration(TimeSpan.FromSeconds(20));
+                    cache.Set("Cities", weatherEncoded, options);
+                });
             }
         }
     }

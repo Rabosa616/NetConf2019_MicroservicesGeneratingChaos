@@ -55,5 +55,14 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Generators
 
             return DateTimeOffset.FromUnixTimeSeconds(long.Parse(date)).DateTime;
         }
+
+        /// <summary>
+        /// UTCs the now.
+        /// </summary>
+        /// <returns>DateTime.</returns>
+        public DateTime UtcNow()
+        {
+            return DateTime.UtcNow;
+        }
     }
 }

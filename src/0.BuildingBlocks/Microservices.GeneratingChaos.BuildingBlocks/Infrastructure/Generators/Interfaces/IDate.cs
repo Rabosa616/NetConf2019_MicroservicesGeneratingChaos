@@ -34,5 +34,11 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Generators
         /// <param name="date">The date.</param>
         /// <returns>DateTime.</returns>
         DateTime ParseFromUnix(string date);
+
+        /// <summary>
+        /// UTCs the now.
+        /// </summary>
+        /// <returns>DateTime.</returns>
+        DateTime UtcNow();
     }
 }

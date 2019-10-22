@@ -54,15 +54,21 @@
             The mediator
             </summary>
         </member>
-        <member name="M:Microservices.GeneratingChaos.Services.Weather.Controllers.WeatherForecastController.#ctor(Microsoft.Extensions.Logging.ILogger{Microservices.GeneratingChaos.Services.Weather.Controllers.WeatherForecastController},MediatR.IMediator)">
+        <member name="F:Microservices.GeneratingChaos.Services.Weather.Controllers.WeatherForecastController._cache">
             <summary>
-            Initializes a new instance of the <see cref="T:Microservices.GeneratingChaos.Services.Weather.Controllers.WeatherForecastController" /> class.
+            The cache
+            </summary>
+        </member>
+        <member name="M:Microservices.GeneratingChaos.Services.Weather.Controllers.WeatherForecastController.#ctor(Microsoft.Extensions.Logging.ILogger{Microservices.GeneratingChaos.Services.Weather.Controllers.WeatherForecastController},MediatR.IMediator,Microsoft.Extensions.Caching.Distributed.IDistributedCache)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microservices.GeneratingChaos.Services.Weather.Controllers.WeatherForecastController"/> class.
             </summary>
             <param name="logger">The logger.</param>
             <param name="mediator">The mediator.</param>
+            <param name="cache">The cache.</param>
             <exception cref="T:System.ArgumentNullException">logger</exception>
             <exception cref="T:System.ArgumentNullException">mediator</exception>
-            <exception cref="T:System.ArgumentNullException">logger</exception>
+            <exception cref="T:System.ArgumentNullException">cache</exception>
         </member>
         <member name="M:Microservices.GeneratingChaos.Services.Weather.Controllers.WeatherForecastController.GetAllAsync">
             <summary>
@@ -499,19 +505,23 @@
             <param name="services">The services.</param>
             <returns>IServiceProvider.</returns>
         </member>
-        <member name="M:Microservices.GeneratingChaos.Services.Weather.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Logging.ILoggerFactory)">
+        <member name="M:Microservices.GeneratingChaos.Services.Weather.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Logging.ILoggerFactory,Microsoft.Extensions.Hosting.IHostApplicationLifetime,Microsoft.Extensions.Caching.Distributed.IDistributedCache)">
             <summary>
             Configures the specified application.
             </summary>
             <param name="app">The application.</param>
             <param name="env">The env.</param>
             <param name="loggerFactory">The logger factory.</param>
+            <param name="lifetime">The lifetime.</param>
+            <param name="cache">The cache.</param>
         </member>
-        <member name="M:Microservices.GeneratingChaos.Services.Weather.Startup.SeedData(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Microservices.GeneratingChaos.Services.Weather.Startup.SeedData(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.Extensions.Hosting.IHostApplicationLifetime,Microsoft.Extensions.Caching.Distributed.IDistributedCache)">
             <summary>
             Seeds the data.
             </summary>
-            <param name="applicationBuilder">The application builder.</param>
+            <param name="app">The application builder.</param>
+            <param name="lifetime">The lifetime.</param>
+            <param name="cache">The cache.</param>
         </member>
     </members>
 </doc>

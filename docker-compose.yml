@@ -1,6 +1,17 @@
 version: '3.4'
 
 services:
+  microservices.generatingchaos.weather.cache:
+    image: redis
+    networks:
+      - backend
+
+  microservices.generatingchaos.api.cache:
+    image: redis
+    networks:
+      - backend
+
+
   microservices.generatingchaos.weather.data:
     image: mongo
     networks:
