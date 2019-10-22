@@ -1,0 +1,92 @@
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: generating-chaos
+  name: weather-service
+  labels:
+    name: weather-service
+spec:
+  ports:
+   - name: http
+     protocol: TCP
+     port: 80
+  selector:
+    role: weatherservice
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: weatherstatefulset
+  namespace: generating-chaos
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: weatherstatefulset
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 50
+  - type: Pods
+    pods:
+      metricName: packets-per-second
+      targetAverageValue: 0.1k
+  - type: Object
+    object:
+      metricName: requests-per-second
+      target:
+        apiVersion: extensions/v1beta1
+        kind: Ingress
+        name: main-route
+      targetValue: 0.1k
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: weatherstatefulset
+  namespace: generating-chaos
+spec:
+  template:
+    metadata:
+      namespace: generating-chaos
+      labels:
+        role: weatherservice
+        app: weatherservice
+        kube-monkey/enabled: enabled
+        kube-monkey/identifier: monkey-victim
+        kube-monkey/mtbf: '1'
+        kube-monkey/kill-mode: "fixed"
+        kube-monkey/kill-value: '1'
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: weatherservice
+          image: chaoscontainerregistry.azurecr.io/microservices.generatingchaos.services.weather
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          env:
+          env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Development"
+          - name: DbConnectionString
+            value: "mongodb://mongostatefulset-mongodb-replicaset.generating-chaos:27017/?replicaSet=rs0"
+          - name: DatabaseName
+            value: "Weather"
+          - name: RedisCacheUrl
+            value: "microservices-generatingchaos-weather-cache.generating-chaos:6379"
+          - name: RedisCacheInstance
+            value: "WeatherServiceCache"
+      hostAliases:
+       - ip: 127.0.0.1
+         hostnames:
+         - weather-service
+      imagePullSecrets:
+      - name: regcred

@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: generating-chaos
+  name: ui-service
+  labels:
+    app: aspnetcore
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+    app: aspnetcore
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ui-service
+  namespace: generating-chaos
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ui-service
+        version: v1
+    spec:
+      containers:
+      - name: ui-service
+        image: chaoscontainerregistry.azurecr.io/microservices.generatingchaos.ui
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Development"
+          - name: ApiUrl
+            value: "http://api-service.generating-chaos/"
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: ui-service-loadbalancer
+spec:
+ type: LoadBalancer
+ ports:
+ - port: 80
+ selector:
+   app: ui-service
