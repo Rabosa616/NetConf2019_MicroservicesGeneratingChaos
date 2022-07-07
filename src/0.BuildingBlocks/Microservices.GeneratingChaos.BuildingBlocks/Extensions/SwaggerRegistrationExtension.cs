@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
@@ -24,7 +27,7 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
         {
             services.AddSwaggerGen(options =>
             {
-                options.DescribeAllEnumsAsStrings();
+                options.SchemaFilter<EnumNamesSchemaFilter> ();
                 options.SwaggerDoc(version,
                     new OpenApiInfo
                     {
@@ -56,6 +59,25 @@ namespace Microservices.GeneratingChaos.BuildingBlocks.Extensions
                    c.SwaggerEndpoint($"/swagger/{version}/swagger.json", name);
                });
             return app;
+        }
+
+        private class EnumNamesSchemaFilter : ISchemaFilter
+        {
+            private const string NAME = "x-enumNames";
+
+            public void Apply(OpenApiSchema model, SchemaFilterContext context)
+            {
+                var typeInfo = context.Type;
+                // Chances are something in the pipeline might generate this automatically at some point in the future
+                // therefore it's best to check if it exists.
+                if (typeInfo.IsEnum && !model.Extensions.ContainsKey(NAME))
+                {
+                    var names = Enum.GetNames(context.Type);
+                    var arr = new OpenApiArray();
+                    arr.AddRange(names.Select(name => new OpenApiString(name)));
+                    model.Extensions.Add(NAME, arr);
+                }
+            }
         }
     }
 }

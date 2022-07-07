@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microservices.GeneratingChaos.BuildingBlocks.Extensions;
 using Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.DataBase;
-using Microservices.GeneratingChaos.BuildingBlocks.Infrastructure.Generators.Interfaces;
 using Microservices.GeneratingChaos.Services.Api.Domain.Entities;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.AutofacModules;
-using Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.Repository.Interfaces;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.Services;
 using Microservices.GeneratingChaos.Services.Api.Infrastructure.Services.Interfaces;
@@ -53,7 +50,7 @@ namespace Microservices.GeneratingChaos.Services.Api
         public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddCustomMvc<Startup>()
-                    .AddSwagger("v1", "Microservices Generating Chaos Api", "Sample API for netconf 2019")
+                    .AddSwagger("v1", "Microservices Generating Chaos Api", "Sample API for Chaos example")
                     .AddOptions();
 
             services.AddStackExchangeRedisCache(options =>
@@ -138,12 +135,12 @@ namespace Microservices.GeneratingChaos.Services.Api
             if (File.Exists(citySeedFile))
             {
                 var cityRepository = app.ApplicationServices.GetRequiredService<ICityRepository>();
-                var cities = JsonConvert.DeserializeObject<List<City>>(File.ReadAllText(citySeedFile, System.Text.Encoding.UTF7));
+                var cities = JsonConvert.DeserializeObject<List<City>>(File.ReadAllText(citySeedFile, Encoding.UTF7));
                 cityRepository.AddManyAsync(cities).Wait();
 
                 lifetime.ApplicationStarted.Register(() =>
                 {
-                    var weatherEncoded = Encoding.UTF8.GetBytes(File.ReadAllText(citySeedFile, System.Text.Encoding.UTF8));
+                    var weatherEncoded = Encoding.UTF8.GetBytes(File.ReadAllText(citySeedFile, Encoding.UTF8));
                     var options = new DistributedCacheEntryOptions()
                                             .SetSlidingExpiration(TimeSpan.FromSeconds(20));
                     cache.Set("Cities", weatherEncoded, options);

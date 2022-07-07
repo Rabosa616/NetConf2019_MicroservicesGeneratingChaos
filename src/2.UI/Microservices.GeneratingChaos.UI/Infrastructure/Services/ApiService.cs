@@ -7,6 +7,7 @@ using Polly.Retry;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace Microservices.GeneratingChaos.UI.Infrastructure.Services
@@ -41,7 +42,7 @@ namespace Microservices.GeneratingChaos.UI.Infrastructure.Services
 
             var response = await policy.ExecuteAsync<WheatherForecastDto[]>(async () =>
             {
-                return await Http.GetJsonAsync<WheatherForecastDto[]>($"api/v1/WeatherForecast/{cityId}").ConfigureAwait(false);
+                return await Http.GetFromJsonAsync<WheatherForecastDto[]>($"api/v1/WeatherForecast/{cityId}").ConfigureAwait(false);
             }).ConfigureAwait(false);
 
             return response;
@@ -56,7 +57,7 @@ namespace Microservices.GeneratingChaos.UI.Infrastructure.Services
             var policy = CreatePolicy();
             var response = await policy.ExecuteAsync<CityDto[]>(async () =>
             {
-                return await Http.GetJsonAsync<CityDto[]>("api/v1/City").ConfigureAwait(false);
+                return await Http.GetFromJsonAsync<CityDto[]>("api/v1/City").ConfigureAwait(false);
             }).ConfigureAwait(false);
 
             return response;            

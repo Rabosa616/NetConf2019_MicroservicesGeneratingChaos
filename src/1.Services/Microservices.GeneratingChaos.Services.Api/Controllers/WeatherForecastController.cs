@@ -78,7 +78,7 @@ namespace Microservices.GeneratingChaos.Services.Api.Controllers
             
             var serializedWeather = JsonConvert.SerializeObject(result);
             var weatherEncoded = Encoding.UTF8.GetBytes(serializedWeather);
-            var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(30));
+            var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
             _cache.Set("Weather", weatherEncoded, options);
 
             return Ok(result);
